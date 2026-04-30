@@ -70,11 +70,15 @@ def get_mcp_config():
         "mcp_server.py"
     )
 
+    # Project root (nơi có pyproject.toml)
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     return {
         # Server 1: Agent Tool Server (local, stdio transport)
+        # Dùng "uv run" để đảm bảo subprocess dùng đúng venv do uv quản lý
         "agent_tools": {
-            "command": sys.executable,  # python interpreter
-            "args": [server_script],
+            "command": "uv",
+            "args": ["run", "--directory", project_root, "python", server_script],
             "transport": "stdio",
         },
         # Có thể thêm nhiều servers khác:
@@ -83,8 +87,8 @@ def get_mcp_config():
         #     "transport": "http",
         # },
         # "database_server": {
-        #     "command": "python",
-        #     "args": ["db_mcp_server.py"],
+        #     "command": "uv",
+        #     "args": ["run", "python", "db_mcp_server.py"],
         #     "transport": "stdio",
         # },
     }

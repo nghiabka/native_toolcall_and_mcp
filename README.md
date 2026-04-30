@@ -75,7 +75,8 @@ native_toolcall_and_mcp/
 ├── comparison/                  # So sánh side-by-side
 │   └── run_both.py              # Chạy cùng query trên cả 2
 │
-├── requirements.txt
+├── pyproject.toml               # uv project config + dependencies
+├── uv.lock                      # Lock file (auto-generated)
 ├── .env.example
 └── README.md                    # ← Bạn đang đọc file này
 ```
@@ -84,11 +85,16 @@ native_toolcall_and_mcp/
 
 ## 🚀 Setup & Chạy
 
-### 1. Install dependencies
+### 1. Install dependencies (dùng `uv`)
 
 ```bash
 cd /data/learning/agent/native_toolcall_and_mcp
-pip install -r requirements.txt
+
+# Nếu chưa có uv:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Sync dependencies (uv tự tạo venv + install)
+uv sync
 ```
 
 ### 2. Cấu hình API Key
@@ -102,13 +108,13 @@ cp .env.example .env
 
 ```bash
 # ── Native Tool Calling ──────────────────────────────
-python -m native_tool_calling.run
+uv run python -m native_tool_calling.run
 
 # ── MCP Tool Calling ─────────────────────────────────
-python -m mcp_tool_calling.run
+uv run python -m mcp_tool_calling.run
 
 # ── So sánh Side-by-Side ─────────────────────────────
-python -m comparison.run_both
+uv run python -m comparison.run_both
 ```
 
 ---
