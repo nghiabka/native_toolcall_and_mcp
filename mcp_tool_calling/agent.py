@@ -42,13 +42,13 @@ import asyncio
 import sys
 import os
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 
 # Đảm bảo import được shared module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from shared.config import GOOGLE_API_KEY, GOOGLE_MODEL_NAME
+from shared.config import OPENAI_API_BASE, OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -136,9 +136,10 @@ async def run_mcp_agent(query: str) -> str:
         print(f"{'─'*60}")
 
         # ── STEP 3: Tạo LangGraph agent ──────────────────────
-        llm = ChatGoogleGenerativeAI(
-            model=GOOGLE_MODEL_NAME,
-            google_api_key=GOOGLE_API_KEY,
+        llm = ChatOpenAI(
+            model=OPENAI_MODEL_NAME,
+            api_key=OPENAI_API_KEY,
+            base_url=OPENAI_API_BASE,
             temperature=0,
         )
 

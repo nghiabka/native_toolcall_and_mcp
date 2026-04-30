@@ -34,14 +34,14 @@ Flow:
 from typing import Annotated, TypedDict
 
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
 # Import shared tools (functions thuần)
 from shared.tools import get_weather, calculate, search_knowledge
-from shared.config import GOOGLE_API_KEY, GOOGLE_MODEL_NAME
+from shared.config import OPENAI_API_BASE, OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -107,9 +107,10 @@ def create_native_agent():
         Compiled LangGraph graph sẵn sàng invoke.
     """
     # ── Khởi tạo LLM với tools ───────────────────────────────
-    llm = ChatGoogleGenerativeAI(
-        model=GOOGLE_MODEL_NAME,
-        google_api_key=GOOGLE_API_KEY,
+    llm = ChatOpenAI(
+        model=OPENAI_MODEL_NAME,
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_API_BASE,
         temperature=0,
     )
 

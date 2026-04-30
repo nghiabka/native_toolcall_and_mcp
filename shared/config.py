@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 # Load .env file từ thư mục project root
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
-GOOGLE_MODEL_NAME = os.getenv("GOOGLE_MODEL_NAME", "gemini-2.0-flash")
+OPENAI_API_BASE = os.getenv("OPENAI_API_BASE", "http://127.0.0.1:1234/v1")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "local-key")
+OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "local-model")
 
-if not GOOGLE_API_KEY:
-    print("⚠️  GOOGLE_API_KEY chưa được set! Hãy tạo file .env từ .env.example")
+if not OPENAI_API_BASE:
+    print("⚠️  OPENAI_API_BASE chưa được set!")
