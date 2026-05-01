@@ -125,46 +125,47 @@ async def run_mcp_agent(query: str) -> str:
 
     mcp_config = get_mcp_config()
 
-    async with MultiServerMCPClient(mcp_config) as client:
-        # ── STEP 2: Discover tools từ MCP Server ─────────────
-        tools = client.get_tools()
+    client = MultiServerMCPClient(mcp_config)
 
-        print(f"  ✅ Discovered {len(tools)} tools từ MCP Server:")
-        for t in tools:
-            print(f"     • {t.name}: {t.description[:60]}...")
+    # ── STEP 2: Discover tools từ MCP Server ─────────────
+    tools = await client.get_tools()
 
-        print(f"{'─'*60}")
+    print(f"  ✅ Discovered {len(tools)} tools từ MCP Server:")
+    for t in tools:
+        print(f"     • {t.name}: {t.description[:60]}...")
 
-        # ── STEP 3: Tạo LangGraph agent ──────────────────────
-        llm = ChatOpenAI(
-            model=OPENAI_MODEL_NAME,
-            api_key=OPENAI_API_KEY,
-            base_url=OPENAI_API_BASE,
-            temperature=0,
-        )
+    print(f"{'─'*60}")
 
-        # create_react_agent tự động tạo StateGraph với:
-        # - agent node (LLM)
-        # - tool node
-        # - conditional edges
-        agent = create_react_agent(llm, tools)
+    # ── STEP 3: Tạo LangGraph agent ──────────────────────
+    llm = ChatOpenAI(
+        model=OPENAI_MODEL_NAME,
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_API_BASE,
+        temperature=0,
+    )
 
-        # ── STEP 4: Invoke agent ─────────────────────────────
-        result = await agent.ainvoke({"messages": [("human", query)]})
+    # create_react_agent tự động tạo StateGraph với:
+    # - agent node (LLM)
+    # - tool node
+    # - conditional edges
+    agent = create_react_agent(llm, tools)
 
-        # In ra các bước trung gian
-        for msg in result["messages"]:
-            msg_type = msg.__class__.__name__
-            if msg_type == "AIMessage" and hasattr(msg, "tool_calls") and msg.tool_calls:
-                for tc in msg.tool_calls:
-                    print(f"  🤖 LLM quyết định gọi tool: {tc['name']}({tc['args']})")
-            elif msg_type == "ToolMessage":
-                print(f"  ⚡ MCP Server trả về: {msg.content[:100]}...")
+    # ── STEP 4: Invoke agent ─────────────────────────────
+    result = await agent.ainvoke({"messages": [("human", query)]})
 
-        final_message = result["messages"][-1]
+    # In ra các bước trung gian
+    for msg in result["messages"]:
+        msg_type = msg.__class__.__name__
+        if msg_type == "AIMessage" and hasattr(msg, "tool_calls") and msg.tool_calls:
+            for tc in msg.tool_calls:
+                print(f"  🤖 LLM quyết định gọi tool: {tc['name']}({tc['args']})")
+        elif msg_type == "ToolMessage":
+            print(f"  ⚡ MCP Server trả về: {msg.content[:100]}...")
 
-        print(f"\n{'─'*60}")
-        print(f"📤 Response: {final_message.content}")
-        print(f"{'='*60}\n")
+    final_message = result["messages"][-1]
 
-        return final_message.content
+    print(f"\n{'─'*60}")
+    print(f"📤 Response: {final_message.content}")
+    print(f"{'='*60}\n")
+
+    return final_message.content
